@@ -1,0 +1,104 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+nav ul {
+    list-style: none;
+    background-color: #444; 
+    text-align: center;
+    padding: 0;
+    margin: 0;
+    }
+nav ul li {
+    font-size: 24px;
+    line-height: 40px;
+    display: inline-block;
+    padding: 20px;
+    }
+nav ul li a {
+    text-decoration: none;
+    color: white;
+    }    
+.container {
+    width: 50%;
+    margin: 50px auto;
+    background: white;
+    padding: 20px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+.header {
+    text-align: center;
+}
+.header img {
+    width: 150px;
+    border-radius: 50%;
+}
+h1 {
+    color: #333333;
+}
+.section {
+    margin-top: 20px;
+}
+.section h2 {
+    background: #007BFF;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+}
+.section p {
+    padding: 5px 10px;
+}
+details {
+    border-radius: 5px;
+    overflow: hidden;
+}
+summary {
+    background-color: #007bff;
+    color: white;
+    padding: 0px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 5px;
+    list-style: none; /* Ẩn mặc định */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    line-height: 0; 
+   
+}
+
+/* Tạo icon mũi tên */
+summary::after {
+    content: "▼"; /* Mũi tên chỉ xuống */
+    font-size: 16px;
+    transition: transform 0.3s ease;
+}
+details[open] summary::after {
+    transform: rotate(180deg); /* Khi mở, xoay mũi tên lên */
+}
+footer {
+    background-color: #333; 
+    color: white; 
+    text-align: center; 
+    padding: 10px ; 
+    position: relative; 
+    bottom: 0;
+    width: 100%;
+}
+tfoot td{
+    font-style: italic;
+}
+table {
+    width: 80%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    
+}
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}

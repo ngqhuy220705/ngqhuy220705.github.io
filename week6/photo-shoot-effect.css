@@ -1,0 +1,47 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #2e3b44;
+    color: white;
+    text-align: center;
+}
+.header {
+    font-size: 24px;
+    font-weight: bold;
+    margin-top: 20px;
+}
+.slogan {
+    font-style: italic;
+    font-size: 14px;
+}
+.menu {
+    margin: 20px;
+}
+.menu a {
+    color: #87CEFA;
+    text-decoration: none;
+    margin: 0 10px;
+    font-size: 18px;
+}
+.content {
+    background-color: #1c2a33;
+    padding: 20px;
+    width: 80%;
+    margin: 0 auto;
+    border-radius: 10px;
+}
+.content h2 {
+    font-family: cursive;
+    letter-spacing: 2px;
+}
+.text-box {
+    text-align: left;
+    color: #b0d877;
+}
+.image-box {
+    text-align: center;
+    margin-top: 20px;
+}
+.footer {
+    margin-top: 20px;
+    font-size: 14px;
+}

@@ -12,34 +12,17 @@
     padding: 0;
 }
 
-body {
+body, html {
+    height: 100%;
     font-family: Arial, sans-serif;
-    line-height: 1.5;
     background-color: #f5f5f5;
-    color: #333;
-}
-
-/* Header */
-header {
-    width: 100%;
-    padding: 15px;
-    text-align: center;
-    background-color: #4CAF50;
-    color: #fff;
-}
-
-header h1 {
-    font-size: 1.8rem;
-}
-
-header p {
-    font-size: 1rem;
 }
 
 /* Iframe chứa website */
 .iframe-container {
     width: 100%;
-    height: calc(100vh - 120px); /* trừ header + menu mobile */
+    height: 100vh; /* chiếm toàn bộ màn hình */
+    padding-bottom: 60px; /* tạo khoảng cho menu mobile */
 }
 
 .iframe-container iframe {
@@ -70,14 +53,6 @@ header p {
 
 /* Responsive */
 @media (max-width: 600px) {
-    header h1 {
-        font-size: 1.4rem;
-    }
-
-    header p {
-        font-size: 0.875rem;
-    }
-
     .mobile-nav i {
         font-size: 20px;
     }
@@ -85,11 +60,6 @@ header p {
 </style>
 </head>
 <body>
-
-<header>
-    <h1>GreenFit</h1>
-    <p>Theo dõi sức khỏe và vóc dáng của bạn</p>
-</header>
 
 <section class="iframe-container">
     <!-- Thay URL dưới bằng link website GreenFit của bạn -->

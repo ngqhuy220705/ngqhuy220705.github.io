@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+     <h1>Java Script</h1>
+     <form action="">
+        <input type="number" name="name" id="number1" placeholder="Enter the first number"> <br>
+        <input type="number" name="email" id="number2" placeholder="Enter the second number"> <br>
+        <button id ="btn" onclick="addNumber();">Submit</button>
+        <label id="results"></label>
+
+     </form>
+     <script>
+        function addNumber ()
+        {
+            var number1 = document.getElementById("number1").value;
+            var number2 = document.getElementById("number2").value;
+            if (number1 == "" || number2 == "") {
+                document.getElementById("results").innerText = "Please enter both numbers.";
+                alert("Please enter both numbers.");
+                return;
+            }
+            if (isNaN(number1) || isNaN(number2)) {
+                document.getElementById("results").innerHTML = "Please enter valid numbers.";
+                alert("Please enter valid numbers.");
+                return;
+            }
+            if (number1 < 0 || number2 < 0) {
+                document.getElementById("results").innerHTML = "Please enter positive numbers.";
+                alert("Please enter positive numbers.");
+                return;
+            }
+            if (number1 > 100 || number2 > 100) {
+                document.getElementById("results").innerHTML = "Please enter numbers less than or equal to 100.";
+                alert("Please enter numbers less than or equal to 100.");
+                return;
+            }
+
+            var result = parseInt(number1) + parseInt(number2);
+            alert(result);
+           
+        }
+        var btn = document.getElementById("btn"); 
+     </script>
+
+    
+</body>
+</html>

@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="description" content="GreenFit 6.0 - Sống khỏe hữu cơ, tính BMI tự động, giỏ hàng, hóa đơn PDF, dark mode, PWA">
     <meta name="theme-color" content="#548C2F">
-    <title>GreenFit Mobile - Sống Xanh, Tập Mạnh</title>
+    <title>GreenFit | Sống Khỏe Toàn Diện</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -19,34 +19,38 @@
         \"display\":\"standalone\",
         \"background_color\":\"#FCF8F2\",
         \"theme_color\":\"#548C2F\",
-        \"icons\":[{\"src\":\"https://via.placeholder.com/192\",\"sizes\":\"192x192\",\"type\":\"image/png\"},{\"src\":\"https://via.placeholder.com/512\",\"sizes\":\"512x512\",\"type\":\"image/png\"}]
+        \"icons\":[{\"src\":\"https://via.placeholder.com/192/548C2F\",\"sizes\":\"192x192\",\"type\":\"image/png\"},{\"src\":\"https://via.placeholder.com/512/548C2F\",\"sizes\":\"512x512\",\"type\":\"image/png\"}]
     }">
 
     <style>
+        /* --- CORE VARIABLES --- */
         :root {
-            --primary: #548C2F;
+            --primary: #548C2F; /* Green - Năng lượng */
             --primary-dark: #3F6F23;
-            --secondary: #E3F2FD;
-            --hot: #E74C3C;
-            --text: #333333;
-            --bg: #FCF8F2;
+            --secondary: #F3FFF0; /* Light Greenish-White - Nền nhẹ */
+            --hot: #E74C3C; /* Red - Khuyến mãi/Lỗi */
+            --text: #1E293B; /* Darker Text - Dễ đọc */
+            --bg: #FCF8F2; /* Creamy White - Nền tự nhiên */
             --card-bg: #FFFFFF;
-            --glass: rgba(255, 255, 255, 0.9); /* Tăng độ mờ trên mobile */
-            --shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            --gray: #6B7280;
-            --transition: all 0.3s ease-in-out;
+            --glass: rgba(255, 255, 255, 0.85); /* Tăng độ mờ */
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.08); /* Shadow mềm mại */
+            --gray: #64748B;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --radius-large: 16px;
+            --radius-medium: 10px;
         }
 
         [data-theme="dark"] {
-            --text: #F3F4F6;
-            --bg: #1F2937;
-            --card-bg: #374151;
-            --glass: rgba(55, 65, 81, 0.9); /* Tăng độ mờ trên mobile */
-            --shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+            --text: #E2E8F0;
+            --bg: #111827;
+            --card-bg: #1F2937;
+            --glass: rgba(31, 41, 55, 0.85);
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             --gray: #9CA3AF;
+            --secondary: #2E4057; /* Darker secondary for contrast */
         }
 
-        /* --- MOBILE-FIRST BASE STYLES --- */
+        /* --- BASE RESET & FONT --- */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { 
             font-family: 'Inter', sans-serif; 
@@ -56,200 +60,214 @@
             scroll-behavior: smooth;
         }
         
-        /* Utility */
-        .container { max-width: 100%; margin: 0 auto; padding: 0 15px; } /* Giảm padding ngang */
+        /* --- UTILITIES --- */
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 15px; }
+        section { padding: 40px 0; }
+        
         .section-title { 
             text-align: center; 
-            margin-bottom: 30px; 
-            font-size: 2rem; /* Giảm size */
+            margin-bottom: 40px; 
+            font-size: 2.5rem; 
+            font-family: 'Playfair Display', serif; /* Font chữ đẹp */
             color: var(--primary-dark); 
-            font-weight: 800;
-            padding-top: 15px;
+            font-weight: 700;
+            position: relative;
+        }
+        .section-title::after { /* Hiệu ứng gạch chân tối giản */
+            content: '';
+            display: block;
+            width: 50px;
+            height: 3px;
+            background-color: var(--primary);
+            margin: 10px auto 0;
+            border-radius: 5px;
+        }
+
+        /* --- BUTTONS --- */
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            padding: 14px 30px; /* Tăng padding */
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(84, 140, 47, 0.4);
+        }
+        .btn-primary:hover { 
+            background-color: var(--primary-dark); 
+            box-shadow: 0 6px 20px rgba(84, 140, 47, 0.5);
+            transform: translateY(-2px);
         }
         
-        /* Header & Nav */
+        /* --- HEADER & NAVIGATION --- */
         header {
             position: sticky;
             top: 0;
             z-index: 1000;
             background-color: var(--glass);
-            backdrop-filter: blur(8px);
+            backdrop-filter: blur(12px); /* Tăng blur */
             box-shadow: var(--shadow);
-            padding: 8px 0; /* Giảm padding */
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(84, 140, 47, 0.1);
         }
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .logo {
-            font-size: 1.5rem; /* Giảm size */
-            font-weight: 900;
+        .logo { font-size: 1.8rem; }
+        .nav-links a:hover {
             color: var(--primary);
-            text-decoration: none;
+            background-color: rgba(84, 140, 47, 0.1);
         }
-        
-        /* Mobile Menu Setup */
-        .nav-links {
-            display: none; /* Ẩn mặc định */
-            flex-direction: column;
-            position: absolute;
-            top: 55px; /* Chiều cao header */
-            left: 0;
-            width: 100%;
-            background-color: var(--card-bg);
-            box-shadow: var(--shadow);
-            padding: 10px 15px;
-            z-index: 999;
-        }
-        .nav-links.active { display: flex; }
-        .nav-links a { 
-            width: 100%; 
-            padding: 10px 0; 
-            border-bottom: 1px solid rgba(0,0,0,0.1); 
-            text-decoration: none;
-            color: var(--text);
-            font-weight: 600;
-            transition: var(--transition);
-        }
-        .nav-links a:last-child { border-bottom: none; }
-        .menu-toggle { display: block; font-size: 1.8rem; cursor: pointer; color: var(--text); }
-        
         .cart-toggle-group {
-            display: flex;
-            gap: 12px; /* Giảm gap */
-            align-items: center;
-        }
-        .cart-icon {
-            font-size: 1.3rem; /* Giảm size */
-            cursor: pointer;
-        }
-        .cart-count {
-            top: -6px; /* Điều chỉnh vị trí */
-            right: -6px;
-            padding: 1px 5px;
-            font-size: 0.65rem;
-        }
-        .user-info-btn, .theme-toggle {
-            font-size: 1.3rem !important; /* Giảm size */
-        }
-
-        /* Scroll Indicator */
-        #scrollIndicator { position: fixed; top: 0; left: 0; height: 3px; background-color: var(--primary); z-index: 1001; width: 0%; }
-        
-        /* Hero Section */
-        .hero {
-            height: 300px; /* Giảm chiều cao */
-        }
-        .hero-content h1 { font-size: 2rem; } /* Giảm size */
-        .hero-content p { font-size: 1rem; margin-bottom: 20px; } /* Giảm size */
-        .btn-primary { padding: 10px 20px; font-size: 0.9rem; } /* Giảm padding/size */
-        
-        /* BMI Calculator */
-        #bmi { padding: 30px 0; }
-        .bmi-calc {
-            padding: 25px; /* Giảm padding */
-            border-radius: 10px;
-        }
-        .input-group input { padding: 12px 12px 12px 40px; }
-        .input-group label { left: 35px; top: 12px; font-size: 0.9rem; }
-        .input-group input:focus + label,
-        .input-group input:not(:placeholder-shown) + label { top: -8px; left: 30px; font-size: 0.7rem; }
-        .input-group i { left: 10px; top: 14px; }
-        .input-group span { right: 10px; top: 14px; }
-        
-        /* Products Section */
-        #products { padding: 30px 0; }
-        .search-filters {
-            flex-direction: column; /* Xếp dọc trên mobile */
-            align-items: stretch;
-            gap: 10px;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-        .filter-buttons {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr); /* 2 nút/hàng */
-            gap: 8px;
-        }
-        .filter-buttons button {
-            padding: 8px 12px;
-            font-size: 0.9rem;
-        }
-        .search-filters input, .search-filters select {
-            padding: 10px;
-            width: 100%; /* Chiếm full width */
-        }
-        .product-grid {
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* 2-3 cột nhỏ hơn */
             gap: 15px;
         }
-        .product-card img { height: 120px; } /* Giảm chiều cao ảnh */
-        .product-info h3 { font-size: 1rem; }
-        .price { font-size: 1.1rem; }
-        .btn-add-cart { padding: 8px; font-size: 0.9rem; }
 
-        /* Modal */
-        .modal-content {
-            padding: 20px;
-            width: 95%; /* Mở rộng hơn */
+        /* Mobile Menu */
+        @media (max-width: 768px) {
+            .nav-links { top: 58px; }
+            .nav-links.active { 
+                animation: slideIn 0.3s ease-out;
+                border-bottom-left-radius: var(--radius-medium);
+                border-bottom-right-radius: var(--radius-medium);
+            }
+            .nav-links a { 
+                padding: 12px 0; 
+                border-bottom: 1px solid rgba(0,0,0,0.05); 
+                font-size: 1rem;
+            }
+            .menu-toggle { font-size: 1.7rem; }
+            @keyframes slideIn {
+                from { opacity: 0; transform: translateY(-10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
         }
-        .cart-item {
-            grid-template-columns: 50px 2fr 1.5fr 60px; /* Tối ưu hóa lại grid */
-            gap: 8px;
-            padding: 0.75rem 0;
-        }
-        .cart-item img { width: 50px; height: 50px; }
-        .cart-item-details strong { font-size: 0.9rem; }
-        .cart-total { font-size: 1.1rem; }
         
-        /* Recommendations */
-        #recommendations {
-            padding: 1rem;
-            border-radius: 12px;
+        /* --- HERO SECTION --- */
+        .hero {
+            height: 350px; /* Cân bằng giữa mobile và desktop */
+            background: linear-gradient(rgba(252, 248, 242, 0.85), rgba(252, 248, 242, 0.85)), url('https://via.placeholder.com/1200x500/9CBA7E/3F6F23?text=GreenFit+Wellness') no-repeat center center/cover;
+            background-attachment: fixed; /* Hiệu ứng Parallax nhẹ */
+        }
+        .hero-content h1 { 
+            font-size: 3rem; 
+            font-family: 'Playfair Display', serif;
+            color: var(--primary-dark); 
+        }
+        .hero-content p { font-size: 1.1rem; max-width: 80%; margin: 0 auto 30px; }
+        
+        /* --- BMI CALCULATOR (Input Styling) --- */
+        #bmi { background-color: var(--secondary); }
+        .bmi-calc {
+            border-radius: var(--radius-large);
+            padding: 40px;
+        }
+        .input-group input {
+            padding: 16px 16px 16px 50px; /* Tăng padding */
+            border-radius: var(--radius-medium);
+            background-color: var(--bg);
+            border: 2px solid #ddd;
+        }
+        .input-group input:focus { 
+            border-color: var(--primary); 
+            box-shadow: 0 0 0 3px rgba(84, 140, 47, 0.3); /* Hiệu ứng focus */
+        }
+        .input-group label { left: 45px; }
+        .input-group i { left: 16px; font-size: 1.1rem; }
+        .input-group span { right: 16px; }
+        
+        #bmiResult { border-radius: var(--radius-medium); font-size: 1.1rem; }
+        #bmiResult small { font-size: 0.9rem; }
+        
+        #recommendations { 
+            border: 1px dashed var(--primary); 
+            border-radius: var(--radius-large);
+            box-shadow: none;
         }
         .rec-card {
-            width: 100px; /* Thu nhỏ card gợi ý */
+            background: var(--bg); /* Đổi nền rec-card */
+            border: 1px solid rgba(84,140,47,.1);
         }
-        .rec-card img { width: 50px; height: 50px; }
-        .rec-card button { font-size: 0.7rem; padding: 4px 8px; }
 
-        /* Chatbot */
-        #chatbot { bottom: 15px; right: 15px; } /* Giảm vị trí */
-        #chat-btn { width: 50px; height: 50px; font-size: 1.5rem; }
-        #chat-window {
-            width: 90vw; /* Chiếm 90% chiều rộng màn hình */
-            max-width: 350px;
-            height: 350px; /* Giảm chiều cao */
-            bottom: 65px;
+        /* --- PRODUCTS SECTION (Filters/Cards) --- */
+        .search-filters {
+            border-radius: var(--radius-large);
+            margin-bottom: 40px;
         }
-        .message { max-width: 90%; font-size: 0.9rem; }
-
-        /* Footer */
-        footer { padding: 30px 0; }
-        .footer-content { flex-direction: column; gap: 20px; }
-        .footer-section { width: 100%; min-width: auto; text-align: left; }
-        .social-links { text-align: left; }
-        footer p { font-size: 0.9rem; }
-
-        /* Tablet/Desktop Override - Giữ nguyên style gốc cho màn hình lớn */
-        @media (min-width: 769px) {
-            .container { max-width: 1200px; padding: 0 20px; }
-            .section-title { font-size: 2.5rem; padding-top: 20px; }
-            .hero { height: 400px; }
-            .hero-content h1 { font-size: 3rem; }
-            .hero-content p { font-size: 1.2rem; }
-            .navbar .nav-links { display: flex; flex-direction: row; position: static; background: none; box-shadow: none; padding: 0; }
-            .nav-links a { border-bottom: none; width: auto; padding: 5px 10px; }
-            .menu-toggle { display: none; }
-            .search-filters { flex-direction: row; align-items: center; }
-            .filter-buttons { grid-template-columns: auto auto auto auto; gap: 10px; }
-            .product-grid { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
-            .product-card img { height: 200px; }
-            .footer-content { flex-direction: row; }
-            .footer-section { width: 30%; }
+        .filter-buttons button {
+            border-radius: 50px;
+            font-weight: 600;
         }
+        .product-grid { gap: 25px; }
+        .product-card {
+            border-radius: var(--radius-large);
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); /* Shadow nhẹ hơn */
+        }
+        .product-card:hover {
+            transform: translateY(-8px); /* Độ nổi cao hơn */
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+        .product-card img {
+            border-top-left-radius: var(--radius-large);
+            border-top-right-radius: var(--radius-large);
+        }
+        .price { color: var(--hot); }
+        .btn-add-cart { 
+            border-radius: var(--radius-medium); 
+            padding: 12px;
+            font-size: 1rem;
+        }
+        .btn-add-cart[disabled] { background: var(--gray) !important; }
+
+        /* --- CART MODAL --- */
+        .modal-content { border-radius: var(--radius-large); }
+        .cart-item {
+            border-bottom-color: rgba(84, 140, 47, 0.15); /* Đường kẻ mờ hơn */
+        }
+        .qty-control button {
+            border-color: var(--primary);
+        }
+        .qty-control button:hover { 
+            background: var(--primary); 
+            color: white; 
+            transform: scale(1.05); /* Hiệu ứng nhấn */
+        }
+
+        /* --- BLOG & FOOTER --- */
+        #blog { 
+            background-color: var(--secondary); 
+            padding: 50px 0;
+        }
+        .blog-post { border-radius: var(--radius-large); }
+        .blog-post img {
+            border-top-left-radius: var(--radius-large);
+            border-top-right-radius: var(--radius-large);
+        }
+        .post-content a { 
+            display: inline-block; 
+            margin-top: 10px; 
+            text-decoration: none;
+            color: var(--primary); 
+        }
+
+        footer { 
+            padding: 50px 0 20px; 
+            background-color: var(--primary-dark); 
+        }
+        .footer-section h4 { border-bottom-color: rgba(255,255,255,0.4); }
+        .social-links a:hover { color: var(--bg); }
+        
+        /* --- CHATBOT --- */
+        #chat-btn {
+            background-color: var(--primary);
+            box-shadow: 0 6px 20px rgba(84, 140, 47, 0.6);
+        }
+        #chat-window { border: none; box-shadow: var(--shadow); }
+        #chat-header { background-color: var(--primary); }
+        .user-message { background-color: var(--primary-dark); }
+        .bot-message { background-color: var(--secondary); }
     </style>
 </head>
 <body onscroll="app.scrollIndicator()">
@@ -277,10 +295,10 @@
                         <i class="fas fa-shopping-cart"></i>
                         <span class="cart-count" id="cartCount">0</span>
                     </div>
-                    <button class="theme-toggle" onclick="app.toggleTheme()" id="themeToggleBtn">
+                    <button class="theme-toggle" onclick="app.toggleTheme()" id="themeToggleBtn" aria-label="Chuyển đổi chế độ sáng/tối">
                         <i class="fas fa-moon"></i>
                     </button>
-                    <button id="authBtn" class="user-info-btn" onclick="app.handleAuthClick()">
+                    <button id="authBtn" class="user-info-btn" onclick="app.handleAuthClick()" aria-label="Tài khoản người dùng">
                         <i class="fas fa-user"></i>
                     </button>
                 </div>
@@ -301,18 +319,18 @@
             <div class="container">
                 <h2 class="section-title">Tính chỉ số BMI</h2>
                 <div class="bmi-calc">
-                    <p>Nhập chiều cao và cân nặng để tính BMI của bạn:</p>
+                    <p style="margin-bottom: 25px; color: var(--gray);">Nhập chiều cao và cân nặng để tính BMI của bạn:</p>
                     <div class="input-group">
                         <input id="height" type="number" min="100" max="250" required placeholder=" ">
                         <label for="height">Chiều cao</label>
                         <i class="fa-solid fa-ruler"></i>
-                        <span style="position:absolute; right:10px; top:14px; color:var(--gray); font-size:0.9rem;">cm</span>
+                        <span style="position:absolute; right:16px; top:16px; color:var(--gray)">cm</span>
                     </div>
                     <div class="input-group">
                         <input id="weight" type="number" min="30" max="200" required placeholder=" ">
                         <label for="weight">Cân nặng</label>
                         <i class="fa-solid fa-weight-scale"></i>
-                        <span style="position:absolute; right:10px; top:14px; color:var(--gray); font-size:0.9rem;">kg</span>
+                        <span style="position:absolute; right:16px; top:16px; color:var(--gray)">kg</span>
                     </div>
                     <button class="btn-primary" id="calcBtn" onclick="app.calculateBMI(true)" style="width:100%">Tính BMI</button>
                     
@@ -321,7 +339,7 @@
                     <div id="recommendations"></div>
                     
                     <div id="bmiHistory">
-                        <h4>Lịch sử BMI (5 mục gần nhất):</h4>
+                        <h4 style="color:var(--primary-dark); margin-bottom: 10px;">Lịch sử BMI (5 mục gần nhất):</h4>
                         <div id="bmiHistoryList"></div>
                         <small style="color:var(--gray)">Đăng nhập để lưu lịch sử</small>
                     </div>
@@ -340,19 +358,19 @@
                         <button onclick="app.filterByCategory('Drink')">Đồ uống</button>
                         <button onclick="app.filterByCategory('Gear')">Dụng cụ</button>
                     </div>
-                    <input type="text" id="searchInput" placeholder="Tìm kiếm sản phẩm...">
-                    <select id="priceFilter" onchange="app.applyFilters()">
+                    <input type="text" id="searchInput" placeholder="Tìm kiếm sản phẩm..." style="border-radius: var(--radius-medium); padding: 12px;">
+                    <select id="priceFilter" onchange="app.applyFilters()" style="border-radius: var(--radius-medium); padding: 12px;">
                         <option value="All">Lọc theo Giá</option>
                         <option value="Low">Dưới 100k</option>
                         <option value="Medium">100k - 500k</option>
                         <option value="High">Trên 500k</option>
                     </select>
-                    <select id="ratingFilter" onchange="app.applyFilters()">
+                    <select id="ratingFilter" onchange="app.applyFilters()" style="border-radius: var(--radius-medium); padding: 12px;">
                         <option value="All">Lọc theo Đánh giá</option>
                         <option value="4+">4 sao trở lên</option>
                         <option value="3+">3 sao trở lên</option>
                     </select>
-                    <button class="btn-primary" style="background:var(--gray)" onclick="app.clearFilters()">Xóa lọc</button>
+                    <button class="btn-primary" style="background:var(--gray); box-shadow:none; padding: 12px 20px;" onclick="app.clearFilters()">Xóa lọc</button>
                 </div>
                 
                 <div class="product-grid" id="productGrid">
@@ -366,27 +384,27 @@
                 <h2 class="section-title">Kiến Thức Sống Xanh</h2>
                 <div class="blog-grid">
                     <div class="blog-post">
-                        <img src="https://via.placeholder.com/300x200?text=Blog+1" alt="Lợi ích của Gạo Lứt">
+                        <img src="https://via.placeholder.com/300x200?text=Gao+Lut+Blog" alt="Lợi ích của Gạo Lứt">
                         <div class="post-content">
                             <h4>5 lợi ích không ngờ của Gạo Lứt</h4>
                             <p>Gạo lứt không chỉ là thực phẩm giảm cân mà còn mang lại nhiều lợi ích sức khỏe khác...</p>
-                            <a href="#" style="color:var(--primary);font-weight:600">Đọc thêm &rarr;</a>
+                            <a href="#">Đọc thêm &rarr;</a>
                         </div>
                     </div>
                     <div class="blog-post">
-                        <img src="https://via.placeholder.com/300x200?text=Blog+2" alt="Các bài tập HIIT">
+                        <img src="https://via.placeholder.com/300x200?text=HIIT+Training" alt="Các bài tập HIIT">
                         <div class="post-content">
                             <h4>HIIT: Tập luyện cường độ cao trong 15 phút</h4>
                             <p>Các bài tập cường độ cao ngắt quãng giúp đốt cháy calo nhanh chóng và hiệu quả...</p>
-                            <a href="#" style="color:var(--primary);font-weight:600">Đọc thêm &rarr;</a>
+                            <a href="#">Đọc thêm &rarr;</a>
                         </div>
                     </div>
                     <div class="blog-post">
-                        <img src="https://via.placeholder.com/300x200?text=Blog+3" alt="Detox tại nhà">
+                        <img src="https://via.placeholder.com/300x200?text=Detox+Recipe" alt="Detox tại nhà">
                         <div class="post-content">
                             <h4>Công thức nước Detox tại nhà</h4>
                             <p>Thanh lọc cơ thể, thải độc và tăng cường năng lượng với các công thức nước ép đơn giản...</p>
-                            <a href="#" style="color:var(--primary);font-weight:600">Đọc thêm &rarr;</a>
+                            <a href="#">Đọc thêm &rarr;</a>
                         </div>
                     </div>
                 </div>
@@ -410,13 +428,13 @@
                 <div class="footer-section">
                     <h4>Mạng xã hội</h4>
                     <div class="social-links">
-                        <a href="#"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-youtube"></i></a>
+                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
                     </div>
                 </div>
             </div>
-            <p style="margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.2);">© 2025 GreenFit 6.0. All rights reserved.</p>
+            <p style="margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.2); font-size: 0.9rem;">© 2025 GreenFit 6.0. All rights reserved.</p>
         </div>
     </footer>
 
@@ -587,7 +605,6 @@
                 const activeCategoryBtn = document.querySelector('.filter-buttons button.active');
                 const activeCategoryText = activeCategoryBtn ? activeCategoryBtn.textContent.trim() : 'Tất cả';
                 
-                // Ánh xạ lại tên tiếng Việt sang category code
                 let categoryCode = 'All';
                 if (activeCategoryText === 'Thực phẩm') categoryCode = 'Food';
                 else if (activeCategoryText === 'Đồ uống') categoryCode = 'Drink';
@@ -627,16 +644,11 @@
             
             const filterByCategory = (category) => {
                 document.querySelectorAll('.filter-buttons button').forEach(btn => {
-                    // Cần kiểm tra nội dung text để khớp với category code
                     const btnText = btn.textContent.trim();
-                    let categoryToMatch = category;
-                    if (category === 'All' && btnText === 'Tất cả') {
-                        btn.classList.add('active');
-                    } else if (category === 'Food' && btnText === 'Thực phẩm') {
-                        btn.classList.add('active');
-                    } else if (category === 'Drink' && btnText === 'Đồ uống') {
-                        btn.classList.add('active');
-                    } else if (category === 'Gear' && btnText === 'Dụng cụ') {
+                    if ((category === 'All' && btnText === 'Tất cả') || 
+                        (category === 'Food' && btnText === 'Thực phẩm') ||
+                        (category === 'Drink' && btnText === 'Đồ uống') ||
+                        (category === 'Gear' && btnText === 'Dụng cụ')) {
                         btn.classList.add('active');
                     } else {
                         btn.classList.remove('active');
@@ -649,7 +661,7 @@
                 els.searchInput.value = '';
                 els.priceFilter.value = 'All';
                 els.ratingFilter.value = 'All';
-                filterByCategory('All'); // Đặt lại về "Tất cả"
+                filterByCategory('All'); 
             };
 
             // 5. Cart/Checkout Functions
@@ -660,21 +672,21 @@
 
                 const total = cart.reduce((s,i) => s + i.price * i.quantity, 0);
 
-                let html = `<span class="close-modal" onclick="app.closeModal('cart')">&times;</span><h2>Giỏ hàng (${cart.length} món)</h2>`;
+                let html = `<span class="close-modal" onclick="app.closeModal('cart')">&times;</span><h2 style="color:var(--primary-dark)">Giỏ hàng (${cart.length} món)</h2>`;
                 
                 const user = currentUser ? users[currentUser] : { name: '', email: '' };
 
                 const checkoutForm = `
-                    <div style="margin-top:16px;padding:16px;border-top:1px solid #ddd;">
-                        <h4 style="margin-bottom:10px">Thông tin giao hàng</h4>
-                        <input id="checkoutName" placeholder="Họ tên" value="${user.name}" style="width:100%;padding:10px;margin-bottom:8px;border-radius:8px;border:1px solid #ddd; background:var(--bg); color:var(--text);">
-                        <input id="checkoutAddress" placeholder="Địa chỉ chi tiết" style="width:100%;padding:10px;margin-bottom:8px;border-radius:8px;border:1px solid #ddd; background:var(--bg); color:var(--text);">
-                        <input id="checkoutPhone" placeholder="Số điện thoại" style="width:100%;padding:10px;margin-bottom:8px;border-radius:8px;border:1px solid #ddd; background:var(--bg); color:var(--text);">
+                    <div style="margin-top:20px;padding:15px;border-top:2px solid var(--secondary); background:var(--bg); border-radius: var(--radius-medium);">
+                        <h4 style="margin-bottom:12px; color:var(--primary-dark);"><i class="fas fa-truck"></i> Thông tin giao hàng</h4>
+                        <input id="checkoutName" placeholder="Họ tên" value="${user.name}" style="width:100%;padding:10px;margin-bottom:10px;border-radius:var(--radius-medium);border:1px solid #ddd; background:var(--card-bg); color:var(--text);">
+                        <input id="checkoutAddress" placeholder="Địa chỉ chi tiết" style="width:100%;padding:10px;margin-bottom:10px;border-radius:var(--radius-medium);border:1px solid #ddd; background:var(--card-bg); color:var(--text);">
+                        <input id="checkoutPhone" placeholder="Số điện thoại" style="width:100%;padding:10px;margin-bottom:10px;border-radius:var(--radius-medium);border:1px solid #ddd; background:var(--card-bg); color:var(--text);">
                     </div>
                 `;
 
                 if (!cart.length) {
-                    html += '<p style="text-align:center;margin-top:20px">Giỏ hàng trống. Hãy chọn sản phẩm!</p>';
+                    html += '<p style="text-align:center;margin-top:30px;font-size:1.1rem; color:var(--gray);"><i class="fas fa-box-open"></i> Giỏ hàng trống. Hãy chọn sản phẩm!</p>';
                 }
                 else {
                     html += '<div style="max-height: 250px; overflow-y: auto;">' + cart.map(i => `
@@ -689,18 +701,18 @@
                                 <span>${i.quantity}</span>
                                 <button onclick="app.updateQty(${i.id},1)">+</button>
                             </div>
-                            <div style="font-weight:600; font-size:0.9rem; text-align:right;">
+                            <div style="font-weight:700; font-size:1rem; text-align:right; color:var(--primary-dark);">
                                 ${(i.price * i.quantity).toLocaleString('vi-VN')} VNĐ
-                                <button onclick="app.removeFromCart(${i.id})" class="cart-remove-btn"><i class="fa-solid fa-times"></i></button>
+                                <button onclick="app.removeFromCart(${i.id})" class="cart-remove-btn"><i class="fa-solid fa-trash-alt"></i></button>
                             </div>
                         </div>
                     `).join('') + '</div>';
                     
                     html += checkoutForm;
                     html += `<div class="cart-total">Tổng thanh toán: ${total.toLocaleString('vi-VN')} VNĐ</div>`;
-                    html += `<div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">
-                        <button onclick="app.checkout('COD')" style="flex:1;background:var(--primary);color:#fff;padding:12px;border:none;border-radius:8px;font-weight:700">Thanh toán COD</button>
-                        <button onclick="app.checkout('MOMO')" style="flex:1;background:#e51e5b;color:#fff;padding:12px;border:none;border-radius:8px;font-weight:700">Momo</button>
+                    html += `<div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap">
+                        <button onclick="app.checkout('COD')" style="flex:1;background:var(--primary);color:#fff;padding:14px;border:none;border-radius:var(--radius-medium);font-weight:700; text-transform:uppercase; box-shadow: 0 4px 10px rgba(84, 140, 47, 0.3);">Thanh toán COD</button>
+                        <button onclick="app.checkout('MOMO')" style="flex:1;background:#e51e5b;color:#fff;padding:14px;border:none;border-radius:var(--radius-medium);font-weight:700; text-transform:uppercase; box-shadow: 0 4px 10px rgba(229, 30, 91, 0.3);">Momo</button>
                     </div>`;
                 }
                 content.innerHTML = html;
@@ -720,7 +732,6 @@
 
                 if (!confirm(`Xác nhận đặt hàng ${cart.length} món với phương thức ${method}?`)) return;
 
-                // Cập nhật tồn kho (local)
                 cart.forEach(ci => {
                     const p = productsData.find(x => x.id === ci.id);
                     if (p) { p.stock -= ci.quantity; if (p.stock < 0) p.stock = 0; }
@@ -730,7 +741,6 @@
                 const total = cart.reduce((s,i)=>s+i.price*i.quantity,0);
                 const orderInfo = { name, address, phone, items: JSON.parse(JSON.stringify(cart)), total, method, date: new Date().toISOString() };
                 
-                // Lưu lịch sử đơn hàng cho user (nếu đã đăng nhập)
                 if (currentUser) {
                     users[currentUser].orders.push(orderInfo);
                     save('gf_users', users);
@@ -754,13 +764,11 @@
                 doc.text(`Ngày: ${new Date(order.date).toLocaleString('vi-VN')}`, 14, 34);
                 doc.text(`Phương thức: ${order.method}`, 14, 40);
 
-                // Thông tin khách hàng
                 doc.setFontSize(12); doc.text('Thông tin khách hàng:', 14, 50);
                 doc.setFontSize(11);
                 doc.text(`- Tên: ${order.name}`, 14, 56);
                 doc.text(`- SĐT: ${order.phone}`, 14, 62);
                 
-                // Tách địa chỉ để hiển thị
                 const addressLines = doc.splitTextToSize(`- Địa chỉ: ${order.address}`, 180);
                 let y = 68;
                 addressLines.forEach(line => {
@@ -772,17 +780,15 @@
                 doc.setFontSize(12); doc.text('Chi tiết đơn hàng:', 14, y + 6);
                 y += 14;
 
-                // Tiêu đề bảng
                 doc.setFontSize(11);
                 doc.text('Tên sản phẩm', 14, y);
                 doc.text('SL', 120, y);
                 doc.text('Đơn giá', 140, y);
                 doc.text('Thành tiền', 175, y);
                 y += 4;
-                doc.line(14, y, 196, y); // Kẻ ngang
+                doc.line(14, y, 196, y); 
                 y += 6;
                 
-                // Chi tiết sản phẩm
                 order.items.forEach(it => { 
                     doc.text(it.name, 14, y); 
                     doc.text(it.quantity.toString(), 120, y);
@@ -791,7 +797,7 @@
                     y += 8; 
                 });
 
-                doc.line(14, y, 196, y); // Kẻ ngang
+                doc.line(14, y, 196, y); 
                 y += 4;
                 doc.setFontSize(14); doc.text(`TỔNG CỘNG: ${order.total.toLocaleString('vi-VN')} VNĐ`, 14, y + 10);
                 doc.save(`GreenFit_Invoice_${Date.now()}.pdf`);
@@ -860,7 +866,7 @@
                         </div>`;
                 }).join('');
                 rec.innerHTML += '</div>';
-                rec.style.display = 'flex'; // Thay đổi từ 'block' thành 'flex' để áp dụng bố cục mobile
+                rec.style.display = 'flex'; 
 
                 if (currentUser && force) {
                     const now = new Date();
@@ -905,13 +911,13 @@
                 content.innerHTML = `
                     <span class="close-modal" onclick="app.closeModal('product')">&times;</span>
                     <div style="text-align:center;padding:10px;">
-                        <img src="${p.img}" alt="${p.name}" style="width:100%; max-width:150px; height:auto; border-radius:10px; margin-bottom:15px;">
-                        <h2>${p.name}</h2>
-                        <div class="rating" style="font-size:1.1rem;margin:8px 0;">${ratingStars} (${p.rating} / 5)</div>
-                        <div class="price" style="font-size:1.6rem;color:var(--hot);margin-bottom:10px;">${p.price.toLocaleString('vi-VN')} VNĐ</div>
+                        <img src="${p.img}" alt="${p.name}" style="width:100%; max-width:200px; height:auto; border-radius:var(--radius-medium); margin-bottom:15px;">
+                        <h2 style="color:var(--primary-dark)">${p.name}</h2>
+                        <div class="rating" style="font-size:1.2rem;margin:10px 0;">${ratingStars} (${p.rating} / 5)</div>
+                        <div class="price" style="font-size:1.8rem;color:var(--hot);margin-bottom:10px;">${p.price.toLocaleString('vi-VN')} VNĐ</div>
                         <p style="color:var(--gray);margin-bottom:15px;">Tồn kho: ${p.stock}</p>
-                        <p style="font-size:0.9rem">Mô tả chi tiết sản phẩm ${p.name}. Đây là sản phẩm hữu cơ, chất lượng cao, phù hợp với mọi chế độ ăn kiêng. Đặt hàng ngay để nhận ưu đãi!</p>
-                        <button class="btn-primary" style="margin-top:20px; width:100%;" onclick="app.addToCart(${p.id}); app.closeModal('product');" ${isOutOfStock ? 'disabled' : ''}>
+                        <p style="font-size:1rem; line-height: 1.6;">Mô tả chi tiết sản phẩm ${p.name}. Đây là sản phẩm hữu cơ, chất lượng cao, phù hợp với mọi chế độ ăn kiêng. Đặt hàng ngay để nhận ưu đãi!</p>
+                        <button class="btn-primary" style="margin-top:25px; width:100%;" onclick="app.addToCart(${p.id}); app.closeModal('product');" ${isOutOfStock ? 'disabled' : ''}>
                             ${isOutOfStock ? 'Hết hàng' : '<i class="fas fa-cart-plus"></i> Thêm vào giỏ hàng'}
                         </button>
                     </div>
@@ -969,12 +975,12 @@
                 const content = document.getElementById('authModalContent');
                 content.innerHTML = `
                     <span class="close-modal" onclick="app.closeModal('auth')">&times;</span>
-                    <h2>Đăng nhập</h2>
+                    <h2 style="color:var(--primary-dark)">Đăng nhập</h2>
                     <div style="padding:20px;">
-                        <input type="email" id="loginEmail" placeholder="Email" style="width:100%;padding:10px;margin-bottom:10px;border-radius:5px;border:1px solid #ddd; background:var(--bg); color:var(--text);">
-                        <input type="password" id="loginPass" placeholder="Mật khẩu" style="width:100%;padding:10px;margin-bottom:20px;border-radius:5px;border:1px solid #ddd; background:var(--bg); color:var(--text);">
-                        <button class="btn-primary" style="width:100%;" onclick="app.login()">Đăng nhập</button>
-                        <p style="text-align:center;margin-top:15px;">Chưa có tài khoản? <a href="#" onclick="event.preventDefault(); app.showRegister()" style="color:var(--primary);font-weight:600;">Đăng ký ngay</a></p>
+                        <input type="email" id="loginEmail" placeholder="Email" style="width:100%;padding:12px;margin-bottom:15px;border-radius:var(--radius-medium);border:1px solid #ddd; background:var(--card-bg); color:var(--text);">
+                        <input type="password" id="loginPass" placeholder="Mật khẩu" style="width:100%;padding:12px;margin-bottom:20px;border-radius:var(--radius-medium);border:1px solid #ddd; background:var(--card-bg); color:var(--text);">
+                        <button class="btn-primary" style="width:100%; padding: 12px 0;" onclick="app.login()">Đăng nhập</button>
+                        <p style="text-align:center;margin-top:15px; color:var(--gray);">Chưa có tài khoản? <a href="#" onclick="event.preventDefault(); app.showRegister()" style="color:var(--primary);font-weight:600;">Đăng ký ngay</a></p>
                     </div>
                 `;
                 modal.style.display = 'flex';
@@ -985,13 +991,13 @@
                 const content = document.getElementById('authModalContent');
                 content.innerHTML = `
                     <span class="close-modal" onclick="app.closeModal('auth')">&times;</span>
-                    <h2>Đăng ký</h2>
+                    <h2 style="color:var(--primary-dark)">Đăng ký</h2>
                     <div style="padding:20px;">
-                        <input type="text" id="regName" placeholder="Họ và Tên" style="width:100%;padding:10px;margin-bottom:10px;border-radius:5px;border:1px solid #ddd; background:var(--bg); color:var(--text);">
-                        <input type="email" id="regEmail" placeholder="Email" style="width:100%;padding:10px;margin-bottom:10px;border-radius:5px;border:1px solid #ddd; background:var(--bg); color:var(--text);">
-                        <input type="password" id="regPass" placeholder="Mật khẩu" style="width:100%;padding:10px;margin-bottom:20px;border-radius:5px;border:1px solid #ddd; background:var(--bg); color:var(--text);">
-                        <button class="btn-primary" style="width:100%;" onclick="app.register()">Đăng ký</button>
-                        <p style="text-align:center;margin-top:15px;">Đã có tài khoản? <a href="#" onclick="event.preventDefault(); app.showLogin()" style="color:var(--primary);font-weight:600;">Đăng nhập</a></p>
+                        <input type="text" id="regName" placeholder="Họ và Tên" style="width:100%;padding:12px;margin-bottom:15px;border-radius:var(--radius-medium);border:1px solid #ddd; background:var(--card-bg); color:var(--text);">
+                        <input type="email" id="regEmail" placeholder="Email" style="width:100%;padding:12px;margin-bottom:15px;border-radius:var(--radius-medium);border:1px solid #ddd; background:var(--card-bg); color:var(--text);">
+                        <input type="password" id="regPass" placeholder="Mật khẩu" style="width:100%;padding:12px;margin-bottom:20px;border-radius:var(--radius-medium);border:1px solid #ddd; background:var(--card-bg); color:var(--text);">
+                        <button class="btn-primary" style="width:100%; padding: 12px 0;" onclick="app.register()">Đăng ký</button>
+                        <p style="text-align:center;margin-top:15px; color:var(--gray);">Đã có tài khoản? <a href="#" onclick="event.preventDefault(); app.showLogin()" style="color:var(--primary);font-weight:600;">Đăng nhập</a></p>
                     </div>
                 `;
                 modal.style.display = 'flex';
@@ -1099,7 +1105,7 @@
                                     return cache.addAll([
                                         './',
                                         'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css',
-                                        'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap',
+                                        'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700&display=swap',
                                     ]);
                                 })
                             );
@@ -1121,7 +1127,6 @@
 
             // 11. Initialization
             document.addEventListener('DOMContentLoaded', () => {
-                // Khởi tạo Theme
                 const theme = localStorage.getItem('gf_theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
                 document.documentElement.dataset.theme = theme;
                 els.themeToggleBtn.querySelector('i').className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
@@ -1132,7 +1137,6 @@
                 showBMIHistory();
                 updateAuthUI(); 
 
-                // Gán listeners
                 els.heightInput.addEventListener('input', autoCalcBMI);
                 els.weightInput.addEventListener('input', autoCalcBMI);
                 els.searchInput.addEventListener('input', delayedFilter);

@@ -1,90 +1,1156 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" data-theme="light">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>GreenFit Mobile Mockup</title>
-<style>
-body {
-margin: 0;
-font-family: Arial, sans-serif;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="GreenFit 6.0 - Sống khỏe hữu cơ, tính BMI tự động, giỏ hàng, hóa đơn PDF, dark mode, PWA">
+    <meta name="theme-color" content="#548C2F">
+    <title>GreenFit Mobile - Sống Xanh, Tập Mạnh</title>
 
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
+    <link rel="manifest" href="data:application/manifest+json,{
+        \"name\":\"GreenFit 6.0\",
+        \"short_name\":\"GreenFit\",
+        \"start_url\":\".\",
+        \"display\":\"standalone\",
+        \"background_color\":\"#FCF8F2\",
+        \"theme_color\":\"#548C2F\",
+        \"icons\":[{\"src\":\"https://via.placeholder.com/192\",\"sizes\":\"192x192\",\"type\":\"image/png\"},{\"src\":\"https://via.placeholder.com/512\",\"sizes\":\"512x512\",\"type\":\"image/png\"}]
+    }">
 
-header, nav, section {
-width: 100%;
-}
+    <style>
+        :root {
+            --primary: #548C2F;
+            --primary-dark: #3F6F23;
+            --secondary: #E3F2FD;
+            --hot: #E74C3C;
+            --text: #333333;
+            --bg: #FCF8F2;
+            --card-bg: #FFFFFF;
+            --glass: rgba(255, 255, 255, 0.9); /* Tăng độ mờ trên mobile */
+            --shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            --gray: #6B7280;
+            --transition: all 0.3s ease-in-out;
+        }
 
+        [data-theme="dark"] {
+            --text: #F3F4F6;
+            --bg: #1F2937;
+            --card-bg: #374151;
+            --glass: rgba(55, 65, 81, 0.9); /* Tăng độ mờ trên mobile */
+            --shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+            --gray: #9CA3AF;
+        }
 
-/* Responsive cho mobile */
-@media (max-width: 600px) {
-header {
-padding: 10px;
-text-align: center;
-}
+        /* --- MOBILE-FIRST BASE STYLES --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--bg); 
+            color: var(--text); 
+            transition: var(--transition);
+            scroll-behavior: smooth;
+        }
+        
+        /* Utility */
+        .container { max-width: 100%; margin: 0 auto; padding: 0 15px; } /* Giảm padding ngang */
+        .section-title { 
+            text-align: center; 
+            margin-bottom: 30px; 
+            font-size: 2rem; /* Giảm size */
+            color: var(--primary-dark); 
+            font-weight: 800;
+            padding-top: 15px;
+        }
+        
+        /* Header & Nav */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background-color: var(--glass);
+            backdrop-filter: blur(8px);
+            box-shadow: var(--shadow);
+            padding: 8px 0; /* Giảm padding */
+        }
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 1.5rem; /* Giảm size */
+            font-weight: 900;
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        /* Mobile Menu Setup */
+        .nav-links {
+            display: none; /* Ẩn mặc định */
+            flex-direction: column;
+            position: absolute;
+            top: 55px; /* Chiều cao header */
+            left: 0;
+            width: 100%;
+            background-color: var(--card-bg);
+            box-shadow: var(--shadow);
+            padding: 10px 15px;
+            z-index: 999;
+        }
+        .nav-links.active { display: flex; }
+        .nav-links a { 
+            width: 100%; 
+            padding: 10px 0; 
+            border-bottom: 1px solid rgba(0,0,0,0.1); 
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        .nav-links a:last-child { border-bottom: none; }
+        .menu-toggle { display: block; font-size: 1.8rem; cursor: pointer; color: var(--text); }
+        
+        .cart-toggle-group {
+            display: flex;
+            gap: 12px; /* Giảm gap */
+            align-items: center;
+        }
+        .cart-icon {
+            font-size: 1.3rem; /* Giảm size */
+            cursor: pointer;
+        }
+        .cart-count {
+            top: -6px; /* Điều chỉnh vị trí */
+            right: -6px;
+            padding: 1px 5px;
+            font-size: 0.65rem;
+        }
+        .user-info-btn, .theme-toggle {
+            font-size: 1.3rem !important; /* Giảm size */
+        }
 
+        /* Scroll Indicator */
+        #scrollIndicator { position: fixed; top: 0; left: 0; height: 3px; background-color: var(--primary); z-index: 1001; width: 0%; }
+        
+        /* Hero Section */
+        .hero {
+            height: 300px; /* Giảm chiều cao */
+        }
+        .hero-content h1 { font-size: 2rem; } /* Giảm size */
+        .hero-content p { font-size: 1rem; margin-bottom: 20px; } /* Giảm size */
+        .btn-primary { padding: 10px 20px; font-size: 0.9rem; } /* Giảm padding/size */
+        
+        /* BMI Calculator */
+        #bmi { padding: 30px 0; }
+        .bmi-calc {
+            padding: 25px; /* Giảm padding */
+            border-radius: 10px;
+        }
+        .input-group input { padding: 12px 12px 12px 40px; }
+        .input-group label { left: 35px; top: 12px; font-size: 0.9rem; }
+        .input-group input:focus + label,
+        .input-group input:not(:placeholder-shown) + label { top: -8px; left: 30px; font-size: 0.7rem; }
+        .input-group i { left: 10px; top: 14px; }
+        .input-group span { right: 10px; top: 14px; }
+        
+        /* Products Section */
+        #products { padding: 30px 0; }
+        .search-filters {
+            flex-direction: column; /* Xếp dọc trên mobile */
+            align-items: stretch;
+            gap: 10px;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .filter-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* 2 nút/hàng */
+            gap: 8px;
+        }
+        .filter-buttons button {
+            padding: 8px 12px;
+            font-size: 0.9rem;
+        }
+        .search-filters input, .search-filters select {
+            padding: 10px;
+            width: 100%; /* Chiếm full width */
+        }
+        .product-grid {
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* 2-3 cột nhỏ hơn */
+            gap: 15px;
+        }
+        .product-card img { height: 120px; } /* Giảm chiều cao ảnh */
+        .product-info h3 { font-size: 1rem; }
+        .price { font-size: 1.1rem; }
+        .btn-add-cart { padding: 8px; font-size: 0.9rem; }
 
-.hero-title {
-font-size: 24px;
-padding: 0 10px;
-}
+        /* Modal */
+        .modal-content {
+            padding: 20px;
+            width: 95%; /* Mở rộng hơn */
+        }
+        .cart-item {
+            grid-template-columns: 50px 2fr 1.5fr 60px; /* Tối ưu hóa lại grid */
+            gap: 8px;
+            padding: 0.75rem 0;
+        }
+        .cart-item img { width: 50px; height: 50px; }
+        .cart-item-details strong { font-size: 0.9rem; }
+        .cart-total { font-size: 1.1rem; }
+        
+        /* Recommendations */
+        #recommendations {
+            padding: 1rem;
+            border-radius: 12px;
+        }
+        .rec-card {
+            width: 100px; /* Thu nhỏ card gợi ý */
+        }
+        .rec-card img { width: 50px; height: 50px; }
+        .rec-card button { font-size: 0.7rem; padding: 4px 8px; }
 
+        /* Chatbot */
+        #chatbot { bottom: 15px; right: 15px; } /* Giảm vị trí */
+        #chat-btn { width: 50px; height: 50px; font-size: 1.5rem; }
+        #chat-window {
+            width: 90vw; /* Chiếm 90% chiều rộng màn hình */
+            max-width: 350px;
+            height: 350px; /* Giảm chiều cao */
+            bottom: 65px;
+        }
+        .message { max-width: 90%; font-size: 0.9rem; }
 
-.hero-subtitle {
-font-size: 14px;
-padding: 0 15px;
-}
+        /* Footer */
+        footer { padding: 30px 0; }
+        .footer-content { flex-direction: column; gap: 20px; }
+        .footer-section { width: 100%; min-width: auto; text-align: left; }
+        .social-links { text-align: left; }
+        footer p { font-size: 0.9rem; }
 
-
-.bmi-box {
-width: 90%;
-margin: auto;
-padding: 15px;
-}
-
-
-input, button {
-width: 100%;
-font-size: 16px;
-}
-
-
-nav ul {
-display: none;
-}
-
-
-/* Menu mobile dạng icon */
-.mobile-nav {
-display: flex;
-justify-content: space-around;
-align-items: center;
-position: fixed;
-bottom: 0;
-left: 0;
-width: 100%;
-background: #ffffff;
-border-top: 1px solid #ddd;
-padding: 10px 0;
-}
-
-
-.mobile-nav i {
-font-size: 24px;
-}
-}
-</style>
+        /* Tablet/Desktop Override - Giữ nguyên style gốc cho màn hình lớn */
+        @media (min-width: 769px) {
+            .container { max-width: 1200px; padding: 0 20px; }
+            .section-title { font-size: 2.5rem; padding-top: 20px; }
+            .hero { height: 400px; }
+            .hero-content h1 { font-size: 3rem; }
+            .hero-content p { font-size: 1.2rem; }
+            .navbar .nav-links { display: flex; flex-direction: row; position: static; background: none; box-shadow: none; padding: 0; }
+            .nav-links a { border-bottom: none; width: auto; padding: 5px 10px; }
+            .menu-toggle { display: none; }
+            .search-filters { flex-direction: row; align-items: center; }
+            .filter-buttons { grid-template-columns: auto auto auto auto; gap: 10px; }
+            .product-grid { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+            .product-card img { height: 200px; }
+            .footer-content { flex-direction: row; }
+            .footer-section { width: 30%; }
+        }
+    </style>
 </head>
-<body>
+<body onscroll="app.scrollIndicator()">
+
+    <div id="scrollIndicator"></div>
+
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="#hero" class="logo">GreenFit 6.0</a>
+                
+                <div class="menu-toggle" onclick="app.toggleMobileMenu()">
+                    <i class="fas fa-bars"></i>
+                </div>
+                
+                <div class="nav-links" id="mobileMenu">
+                    <a href="#products" onclick="app.scrollToProduct(); app.toggleMobileMenu()">Sản phẩm</a>
+                    <a href="#bmi" onclick="app.toggleMobileMenu()">Tính BMI</a>
+                    <a href="#blog" onclick="app.toggleMobileMenu()">Blog</a>
+                    <a href="#contact" onclick="app.toggleMobileMenu()">Liên hệ</a>
+                </div>
+                
+                <div class="cart-toggle-group">
+                    <div class="cart-icon" onclick="app.toggleCart()">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-count" id="cartCount">0</span>
+                    </div>
+                    <button class="theme-toggle" onclick="app.toggleTheme()" id="themeToggleBtn">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <button id="authBtn" class="user-info-btn" onclick="app.handleAuthClick()">
+                        <i class="fas fa-user"></i>
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section id="hero" class="hero">
+            <div class="hero-content">
+                <h1>Sống Xanh, Tập Mạnh</h1>
+                <p>Thực phẩm hữu cơ & dụng cụ tập luyện cho một lối sống khỏe mạnh.</p>
+                <a href="#products" class="btn-primary" onclick="app.scrollToProduct()">Khám phá ngay</a>
+            </div>
+        </section>
+
+        <section id="bmi">
+            <div class="container">
+                <h2 class="section-title">Tính chỉ số BMI</h2>
+                <div class="bmi-calc">
+                    <p>Nhập chiều cao và cân nặng để tính BMI của bạn:</p>
+                    <div class="input-group">
+                        <input id="height" type="number" min="100" max="250" required placeholder=" ">
+                        <label for="height">Chiều cao</label>
+                        <i class="fa-solid fa-ruler"></i>
+                        <span style="position:absolute; right:10px; top:14px; color:var(--gray); font-size:0.9rem;">cm</span>
+                    </div>
+                    <div class="input-group">
+                        <input id="weight" type="number" min="30" max="200" required placeholder=" ">
+                        <label for="weight">Cân nặng</label>
+                        <i class="fa-solid fa-weight-scale"></i>
+                        <span style="position:absolute; right:10px; top:14px; color:var(--gray); font-size:0.9rem;">kg</span>
+                    </div>
+                    <button class="btn-primary" id="calcBtn" onclick="app.calculateBMI(true)" style="width:100%">Tính BMI</button>
+                    
+                    <div id="bmiResult"></div>
+
+                    <div id="recommendations"></div>
+                    
+                    <div id="bmiHistory">
+                        <h4>Lịch sử BMI (5 mục gần nhất):</h4>
+                        <div id="bmiHistoryList"></div>
+                        <small style="color:var(--gray)">Đăng nhập để lưu lịch sử</small>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="products">
+            <div class="container">
+                <h2 class="section-title">Sản Phẩm Hữu Cơ</h2>
+                
+                <div class="search-filters">
+                    <div class="filter-buttons">
+                        <button onclick="app.filterByCategory('All')" class="active">Tất cả</button>
+                        <button onclick="app.filterByCategory('Food')">Thực phẩm</button>
+                        <button onclick="app.filterByCategory('Drink')">Đồ uống</button>
+                        <button onclick="app.filterByCategory('Gear')">Dụng cụ</button>
+                    </div>
+                    <input type="text" id="searchInput" placeholder="Tìm kiếm sản phẩm...">
+                    <select id="priceFilter" onchange="app.applyFilters()">
+                        <option value="All">Lọc theo Giá</option>
+                        <option value="Low">Dưới 100k</option>
+                        <option value="Medium">100k - 500k</option>
+                        <option value="High">Trên 500k</option>
+                    </select>
+                    <select id="ratingFilter" onchange="app.applyFilters()">
+                        <option value="All">Lọc theo Đánh giá</option>
+                        <option value="4+">4 sao trở lên</option>
+                        <option value="3+">3 sao trở lên</option>
+                    </select>
+                    <button class="btn-primary" style="background:var(--gray)" onclick="app.clearFilters()">Xóa lọc</button>
+                </div>
+                
+                <div class="product-grid" id="productGrid">
+                    <div id="noResults" style="display:none">Không tìm thấy sản phẩm nào phù hợp.</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="blog">
+            <div class="container">
+                <h2 class="section-title">Kiến Thức Sống Xanh</h2>
+                <div class="blog-grid">
+                    <div class="blog-post">
+                        <img src="https://via.placeholder.com/300x200?text=Blog+1" alt="Lợi ích của Gạo Lứt">
+                        <div class="post-content">
+                            <h4>5 lợi ích không ngờ của Gạo Lứt</h4>
+                            <p>Gạo lứt không chỉ là thực phẩm giảm cân mà còn mang lại nhiều lợi ích sức khỏe khác...</p>
+                            <a href="#" style="color:var(--primary);font-weight:600">Đọc thêm &rarr;</a>
+                        </div>
+                    </div>
+                    <div class="blog-post">
+                        <img src="https://via.placeholder.com/300x200?text=Blog+2" alt="Các bài tập HIIT">
+                        <div class="post-content">
+                            <h4>HIIT: Tập luyện cường độ cao trong 15 phút</h4>
+                            <p>Các bài tập cường độ cao ngắt quãng giúp đốt cháy calo nhanh chóng và hiệu quả...</p>
+                            <a href="#" style="color:var(--primary);font-weight:600">Đọc thêm &rarr;</a>
+                        </div>
+                    </div>
+                    <div class="blog-post">
+                        <img src="https://via.placeholder.com/300x200?text=Blog+3" alt="Detox tại nhà">
+                        <div class="post-content">
+                            <h4>Công thức nước Detox tại nhà</h4>
+                            <p>Thanh lọc cơ thể, thải độc và tăng cường năng lượng với các công thức nước ép đơn giản...</p>
+                            <a href="#" style="color:var(--primary);font-weight:600">Đọc thêm &rarr;</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Về GreenFit</h4>
+                    <p>Cam kết cung cấp sản phẩm hữu cơ chất lượng cao và đồng hành cùng bạn trên hành trình sống khỏe.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Liên hệ</h4>
+                    <p>Địa chỉ: 123 Đường Sống Xanh, Q. Khỏe Mạnh, TP. Hà Nội</p>
+                    <p>Email: contact@greenfit.com</p>
+                    <p>Hotline: 0987-654-321</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Mạng xã hội</h4>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+            <p style="margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.2);">© 2025 GreenFit 6.0. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <div id="cartModal" class="modal" onclick="if(event.target.id==='cartModal') app.closeModal('cart')">
+        <div class="modal-content" id="cartModalContent">
+        </div>
+    </div>
+
+    <div id="productModal" class="modal" onclick="if(event.target.id==='productModal') app.closeModal('product')">
+        <div class="modal-content" id="productModalContent">
+        </div>
+    </div>
+
+    <div id="authModal" class="modal" onclick="if(event.target.id==='authModal') app.closeModal('auth')">
+        <div class="modal-content" id="authModalContent">
+        </div>
+    </div>
+
+    <div id="chatbot">
+        <button id="chat-btn" onclick="app.toggleChat()"><i class="fas fa-robot"></i></button>
+        <div id="chat-window">
+            <div id="chat-header">GreenFit AI - Hỏi đáp 24/7</div>
+            <div id="chat-body">
+                <div class="message bot-message"><strong>AI:</strong> Chào bạn, tôi là GreenFit AI. Tôi có thể giúp gì cho bạn về dinh dưỡng, tập luyện hay sản phẩm?</div>
+            </div>
+            <div id="chat-input-area">
+                <input type="text" id="chatInput" placeholder="Nhập tin nhắn..." onkeyup="if(event.keyCode===13) app.sendMessage()">
+                <button id="chat-send-btn" onclick="app.sendMessage()"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // JS Code (Duy trì code JS gốc)
+        const app = (function() {
+            // 1. Dữ liệu khởi tạo
+            let productsData = [
+                { id: 1, name: 'Detox Juice Cải Bó Xôi', price: 89000, category: 'Drink', rating: 4.8, stock: 50, img: 'https://via.placeholder.com/150/548C2F?text=Detox' },
+                { id: 2, name: 'Protein Powder Hữu Cơ', price: 750000, category: 'Food', rating: 4.5, stock: 15, img: 'https://via.placeholder.com/150/3F6F23?text=Protein' },
+                { id: 3, name: 'Hạt Chia Tự Nhiên', price: 120000, category: 'Food', rating: 4.9, stock: 100, img: 'https://via.placeholder.com/150/9CBA7E?text=Chia' },
+                { id: 4, name: 'Gạo Lứt Giảm Cân', price: 45000, category: 'Food', rating: 4.6, stock: 0, img: 'https://via.placeholder.com/150/7A9A5C?text=Gao+Lut' },
+                { id: 5, name: 'Energy Bar Hạt Tổng Hợp', price: 60000, category: 'Food', rating: 4.7, stock: 75, img: 'https://via.placeholder.com/150/B8D89C?text=Bar' },
+                { id: 6, name: 'Thảm Yoga Chống Trượt', price: 350000, category: 'Gear', rating: 4.4, stock: 30, img: 'https://via.placeholder.com/150/548C2F?text=Yoga+Mat' },
+                { id: 7, name: 'Bình Nước Thủy Tinh', price: 150000, category: 'Drink', rating: 4.3, stock: 60, img: 'https://via.placeholder.com/150/3F6F23?text=Bottle' },
+                { id: 8, name: 'Tạ Tay 2kg', price: 280000, category: 'Gear', rating: 4.7, stock: 20, img: 'https://via.placeholder.com/150/9CBA7E?text=Dumbbell' },
+            ];
+
+            let cart = JSON.parse(localStorage.getItem('gf_cart')) || [];
+            let users = JSON.parse(localStorage.getItem('gf_users')) || {};
+            let currentUser = localStorage.getItem('gf_user') || null;
+
+            // 2. DOM Elements
+            const els = {
+                cartCount: document.getElementById('cartCount'),
+                productGrid: document.getElementById('productGrid'),
+                searchInput: document.getElementById('searchInput'),
+                priceFilter: document.getElementById('priceFilter'),
+                ratingFilter: document.getElementById('ratingFilter'),
+                calcBtn: document.getElementById('calcBtn'),
+                chatBody: document.getElementById('chat-body'),
+                chatInput: document.getElementById('chatInput'),
+                noResults: document.getElementById('noResults'),
+                heightInput: document.getElementById('height'),
+                weightInput: document.getElementById('weight'),
+                authBtn: document.getElementById('authBtn'),
+                themeToggleBtn: document.getElementById('themeToggleBtn')
+            };
+
+            // 3. Utils
+            const save = (key, data) => localStorage.setItem(key, JSON.stringify(data));
+            const saveProducts = () => save('gf_products', productsData);
+            const updateCartUI = () => els.cartCount.textContent = cart.length;
+
+            const updateAuthUI = () => {
+                if (currentUser) {
+                    const user = users[currentUser];
+                    els.authBtn.classList.add('logged-in');
+                    els.authBtn.innerHTML = user.name.split(' ')[0];
+                } else {
+                    els.authBtn.classList.remove('logged-in');
+                    els.authBtn.innerHTML = '<i class="fas fa-user"></i>';
+                }
+            };
+
+            // 4. Product Functions
+            const renderProducts = (products) => {
+                els.productGrid.innerHTML = '';
+                if (products.length === 0) {
+                    els.noResults.style.display = 'block';
+                    return;
+                }
+                els.noResults.style.display = 'none';
+
+                products.forEach(p => {
+                    const card = document.createElement('div');
+                    card.className = 'product-card';
+                    
+                    const ratingStars = '⭐'.repeat(Math.round(p.rating));
+                    const isOutOfStock = p.stock <= 0;
+                    
+                    card.innerHTML = `
+                        <img src="${p.img}" alt="${p.name}" loading="lazy" onclick="app.showProduct(${p.id})">
+                        <div class="product-info">
+                            <h3>${p.name}</h3>
+                            <div class="rating">${ratingStars} (${p.rating})</div>
+                            <div class="price">${p.price.toLocaleString('vi-VN')} VNĐ</div>
+                            <small style="color:${isOutOfStock ? 'var(--hot)' : 'var(--primary-dark)'}; font-weight:600;">${isOutOfStock ? 'HẾT HÀNG' : `Tồn kho: ${p.stock}`}</small>
+                            <button class="btn-add-cart" onclick="event.stopPropagation(); app.addToCart(${p.id})" ${isOutOfStock ? 'disabled' : ''}>
+                                ${isOutOfStock ? 'Hết hàng' : '<i class="fas fa-cart-plus"></i> Thêm vào giỏ'}
+                            </button>
+                        </div>
+                    `;
+                    els.productGrid.appendChild(card);
+                });
+            };
+
+            const addToCart = (id) => {
+                const product = productsData.find(p => p.id === id);
+                if (!product || product.stock <= 0) return alert('Sản phẩm đã hết hàng!');
+                
+                const cartItem = cart.find(item => item.id === id);
+                
+                if (cartItem) {
+                    if (cartItem.quantity < product.stock) {
+                        cartItem.quantity++;
+                    } else {
+                        return alert(`Không thể thêm, chỉ còn ${product.stock} sản phẩm!`);
+                    }
+                } else {
+                    cart.push({ id: product.id, name: product.name, price: product.price, img: product.img, quantity: 1 });
+                }
+                
+                save('gf_cart', cart);
+                updateCartUI();
+                alert(`${product.name} đã được thêm vào giỏ hàng!`);
+            };
+
+            const removeFromCart = (id) => {
+                cart = cart.filter(item => item.id !== id);
+                save('gf_cart', cart);
+                updateCartUI();
+                toggleCart(); 
+            };
+            
+            const updateQty = (id, change) => {
+                const item = cart.find(i => i.id === id);
+                const product = productsData.find(p => p.id === id);
+
+                if (item) {
+                    const newQty = item.quantity + change;
+                    if (newQty > 0 && newQty <= product.stock) {
+                        item.quantity = newQty;
+                    } else if (newQty > product.stock) {
+                        alert(`Số lượng tối đa có thể mua là ${product.stock}`);
+                    } else if (newQty <= 0) {
+                        removeFromCart(id);
+                        return;
+                    }
+                    save('gf_cart', cart);
+                    toggleCart(); 
+                }
+            };
+
+            const applyFilters = () => {
+                const query = els.searchInput.value.toLowerCase().trim();
+                const price = els.priceFilter.value;
+                const rating = els.ratingFilter.value;
+                const activeCategoryBtn = document.querySelector('.filter-buttons button.active');
+                const activeCategoryText = activeCategoryBtn ? activeCategoryBtn.textContent.trim() : 'Tất cả';
+                
+                // Ánh xạ lại tên tiếng Việt sang category code
+                let categoryCode = 'All';
+                if (activeCategoryText === 'Thực phẩm') categoryCode = 'Food';
+                else if (activeCategoryText === 'Đồ uống') categoryCode = 'Drink';
+                else if (activeCategoryText === 'Dụng cụ') categoryCode = 'Gear';
+
+                const filtered = productsData.filter(p => {
+                    const matchQuery = p.name.toLowerCase().includes(query);
+                    
+                    const matchCategory = categoryCode === 'All' || p.category === categoryCode;
+                    
+                    const matchPrice = (() => {
+                        switch (price) {
+                            case 'Low': return p.price < 100000;
+                            case 'Medium': return p.price >= 100000 && p.price <= 500000;
+                            case 'High': return p.price > 500000;
+                            case 'All':
+                            default: return true;
+                        }
+                    })();
+                    
+                    const matchRating = (() => {
+                        if (rating === '4+') return p.rating >= 4;
+                        if (rating === '3+') return p.rating >= 3;
+                        return true;
+                    })();
+                    
+                    return matchQuery && matchCategory && matchPrice && matchRating;
+                });
+                
+                renderProducts(filtered);
+            };
+
+            const delayedFilter = () => {
+                clearTimeout(window.filterTimeout);
+                window.filterTimeout = setTimeout(applyFilters, 300);
+            };
+            
+            const filterByCategory = (category) => {
+                document.querySelectorAll('.filter-buttons button').forEach(btn => {
+                    // Cần kiểm tra nội dung text để khớp với category code
+                    const btnText = btn.textContent.trim();
+                    let categoryToMatch = category;
+                    if (category === 'All' && btnText === 'Tất cả') {
+                        btn.classList.add('active');
+                    } else if (category === 'Food' && btnText === 'Thực phẩm') {
+                        btn.classList.add('active');
+                    } else if (category === 'Drink' && btnText === 'Đồ uống') {
+                        btn.classList.add('active');
+                    } else if (category === 'Gear' && btnText === 'Dụng cụ') {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+                applyFilters();
+            };
+            
+            const clearFilters = () => {
+                els.searchInput.value = '';
+                els.priceFilter.value = 'All';
+                els.ratingFilter.value = 'All';
+                filterByCategory('All'); // Đặt lại về "Tất cả"
+            };
+
+            // 5. Cart/Checkout Functions
+            const toggleCart = () => {
+                const modal = document.getElementById('cartModal');
+                const content = document.getElementById('cartModalContent');
+                if (modal.style.display === 'flex') { closeModal('cart'); return; }
+
+                const total = cart.reduce((s,i) => s + i.price * i.quantity, 0);
+
+                let html = `<span class="close-modal" onclick="app.closeModal('cart')">&times;</span><h2>Giỏ hàng (${cart.length} món)</h2>`;
+                
+                const user = currentUser ? users[currentUser] : { name: '', email: '' };
+
+                const checkoutForm = `
+                    <div style="margin-top:16px;padding:16px;border-top:1px solid #ddd;">
+                        <h4 style="margin-bottom:10px">Thông tin giao hàng</h4>
+                        <input id="checkoutName" placeholder="Họ tên" value="${user.name}" style="width:100%;padding:10px;margin-bottom:8px;border-radius:8px;border:1px solid #ddd; background:var(--bg); color:var(--text);">
+                        <input id="checkoutAddress" placeholder="Địa chỉ chi tiết" style="width:100%;padding:10px;margin-bottom:8px;border-radius:8px;border:1px solid #ddd; background:var(--bg); color:var(--text);">
+                        <input id="checkoutPhone" placeholder="Số điện thoại" style="width:100%;padding:10px;margin-bottom:8px;border-radius:8px;border:1px solid #ddd; background:var(--bg); color:var(--text);">
+                    </div>
+                `;
+
+                if (!cart.length) {
+                    html += '<p style="text-align:center;margin-top:20px">Giỏ hàng trống. Hãy chọn sản phẩm!</p>';
+                }
+                else {
+                    html += '<div style="max-height: 250px; overflow-y: auto;">' + cart.map(i => `
+                        <div class="cart-item">
+                            <img src="${i.img}" alt="${i.name}">
+                            <div class="cart-item-details">
+                                <strong>${i.name}</strong>
+                                <small>${i.price.toLocaleString('vi-VN')} VNĐ</small>
+                            </div>
+                            <div class="qty-control">
+                                <button onclick="app.updateQty(${i.id},-1)">-</button>
+                                <span>${i.quantity}</span>
+                                <button onclick="app.updateQty(${i.id},1)">+</button>
+                            </div>
+                            <div style="font-weight:600; font-size:0.9rem; text-align:right;">
+                                ${(i.price * i.quantity).toLocaleString('vi-VN')} VNĐ
+                                <button onclick="app.removeFromCart(${i.id})" class="cart-remove-btn"><i class="fa-solid fa-times"></i></button>
+                            </div>
+                        </div>
+                    `).join('') + '</div>';
+                    
+                    html += checkoutForm;
+                    html += `<div class="cart-total">Tổng thanh toán: ${total.toLocaleString('vi-VN')} VNĐ</div>`;
+                    html += `<div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">
+                        <button onclick="app.checkout('COD')" style="flex:1;background:var(--primary);color:#fff;padding:12px;border:none;border-radius:8px;font-weight:700">Thanh toán COD</button>
+                        <button onclick="app.checkout('MOMO')" style="flex:1;background:#e51e5b;color:#fff;padding:12px;border:none;border-radius:8px;font-weight:700">Momo</button>
+                    </div>`;
+                }
+                content.innerHTML = html;
+                modal.style.display = 'flex';
+            };
+
+            const checkout = (method) => {
+                if (!cart.length) return;
+                
+                const name = document.getElementById('checkoutName').value.trim();
+                const address = document.getElementById('checkoutAddress').value.trim();
+                const phone = document.getElementById('checkoutPhone').value.trim();
+
+                if (!name || !address || !phone) {
+                    return alert('Vui lòng điền đầy đủ thông tin giao hàng!');
+                }
+
+                if (!confirm(`Xác nhận đặt hàng ${cart.length} món với phương thức ${method}?`)) return;
+
+                // Cập nhật tồn kho (local)
+                cart.forEach(ci => {
+                    const p = productsData.find(x => x.id === ci.id);
+                    if (p) { p.stock -= ci.quantity; if (p.stock < 0) p.stock = 0; }
+                });
+                saveProducts();
+                
+                const total = cart.reduce((s,i)=>s+i.price*i.quantity,0);
+                const orderInfo = { name, address, phone, items: JSON.parse(JSON.stringify(cart)), total, method, date: new Date().toISOString() };
+                
+                // Lưu lịch sử đơn hàng cho user (nếu đã đăng nhập)
+                if (currentUser) {
+                    users[currentUser].orders.push(orderInfo);
+                    save('gf_users', users);
+                }
+                
+                generateInvoicePDF(orderInfo);
+                
+                cart = []; save('gf_cart', cart); 
+                updateCartUI(); 
+                renderProducts(productsData); 
+                closeModal('cart');
+                alert('Thanh toán thành công! Hóa đơn đã tải về.');
+            };
+
+            const generateInvoicePDF = (order) => {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                doc.setFontSize(18); doc.text('HÓA ĐƠN ĐẶT HÀNG - GreenFit', 14, 20);
+                doc.setFontSize(11);
+                doc.text(`Mã ĐH: #${Date.now().toString().slice(-6)}`, 14, 28);
+                doc.text(`Ngày: ${new Date(order.date).toLocaleString('vi-VN')}`, 14, 34);
+                doc.text(`Phương thức: ${order.method}`, 14, 40);
+
+                // Thông tin khách hàng
+                doc.setFontSize(12); doc.text('Thông tin khách hàng:', 14, 50);
+                doc.setFontSize(11);
+                doc.text(`- Tên: ${order.name}`, 14, 56);
+                doc.text(`- SĐT: ${order.phone}`, 14, 62);
+                
+                // Tách địa chỉ để hiển thị
+                const addressLines = doc.splitTextToSize(`- Địa chỉ: ${order.address}`, 180);
+                let y = 68;
+                addressLines.forEach(line => {
+                    doc.text(line, 14, y);
+                    y += 6;
+                });
 
 
-<div class="phone-frame">
-<div class="notch"></div>
-<div class="inner-frame">
-<!-- Thay URL dưới bằng link website GreenFit của bạn -->
-<iframe src="https://codmunity.gg/weapon/deltaforce/r93"></iframe>
-</div>
-</div>
+                doc.setFontSize(12); doc.text('Chi tiết đơn hàng:', 14, y + 6);
+                y += 14;
+
+                // Tiêu đề bảng
+                doc.setFontSize(11);
+                doc.text('Tên sản phẩm', 14, y);
+                doc.text('SL', 120, y);
+                doc.text('Đơn giá', 140, y);
+                doc.text('Thành tiền', 175, y);
+                y += 4;
+                doc.line(14, y, 196, y); // Kẻ ngang
+                y += 6;
+                
+                // Chi tiết sản phẩm
+                order.items.forEach(it => { 
+                    doc.text(it.name, 14, y); 
+                    doc.text(it.quantity.toString(), 120, y);
+                    doc.text(it.price.toLocaleString('vi-VN'), 140, y);
+                    doc.text((it.price*it.quantity).toLocaleString('vi-VN') + ' VNĐ', 175, y); 
+                    y += 8; 
+                });
+
+                doc.line(14, y, 196, y); // Kẻ ngang
+                y += 4;
+                doc.setFontSize(14); doc.text(`TỔNG CỘNG: ${order.total.toLocaleString('vi-VN')} VNĐ`, 14, y + 10);
+                doc.save(`GreenFit_Invoice_${Date.now()}.pdf`);
+            };
 
 
+            // 6. BMI Functions
+            const autoCalcBMI = () => {
+                const h = +els.heightInput.value;
+                const w = +els.weightInput.value;
+                
+                if (h >= 100 && h <= 250 && w >= 30 && w <= 200) {
+                    calculateBMI(false);
+                } else {
+                    document.getElementById('bmiResult').style.display = 'none';
+                    document.getElementById('recommendations').style.display = 'none';
+                }
+            };
+
+            const calculateBMI = (force = false) => {
+                const h = +els.heightInput.value / 100;
+                const w = +els.weightInput.value;
+                const result = document.getElementById('bmiResult');
+                const rec = document.getElementById('recommendations');
+                
+                if (h < 1 || w < 1) { 
+                    result.style.display = 'none';
+                    rec.style.display = 'none';
+                    return;
+                }
+
+                const bmi = (w / (h * h)).toFixed(1);
+                let color, status, advice, suggestions;
+
+                if (bmi < 18.5) { 
+                    color = '#f1c40f'; status = 'Gầy'; advice = 'Tăng cân: ưu tiên protein, ăn nhiều bữa, tập tạ. Gợi ý: Protein, Energy Bar.';
+                    suggestions = [2, 5];
+                }
+                else if (bmi < 25) { 
+                    color = '#27ae60'; status = 'Bình thường'; advice = 'Duy trì tốt! Tập đều + ăn đủ chất. Gợi ý: Detox Juice, Hạt Chia.';
+                    suggestions = [1, 3]; 
+                }
+                else if (bmi < 30) { 
+                    color = '#f39c12'; status = 'Thừa cân'; advice = 'Giảm tinh bột, tăng rau, cardio 30p/ngày. Gợi ý: Gạo Lứt, Detox Juice.';
+                    suggestions = [4, 1, 6]; 
+                }
+                else { 
+                    color = '#e74c3c'; status = 'Béo phì'; advice = 'Cần giảm cân gấp: cắt đường, HIIT, tư vấn bác sĩ. Gợi ý: Gạo Lứt, Detox Juice, Thảm Yoga.';
+                    suggestions = [4, 1, 6]; 
+                }
+
+                result.style.display = 'block';
+                result.style.background = color;
+                result.innerHTML = `<strong>BMI: ${bmi}</strong> — ${status}<br><small>${advice}</small>`;
+                result.style.animation = 'slideDown 0.5s';
+
+                rec.innerHTML = '<strong>Gợi ý Sản phẩm:</strong> <div style="display:flex; gap:1rem; flex-wrap:wrap; justify-content:center; margin-top:10px">';
+                rec.innerHTML += suggestions.map(id => {
+                    const p = productsData.find(x => x.id === id);
+                    if (!p) return '';
+                    return `
+                        <div class="rec-card" onclick="app.addToCart(${p.id})">
+                            <img src="${p.img}" alt="${p.name}" loading="lazy">
+                            <small style="font-weight:600">${p.name.split(' ').slice(0,3).join(' ')}...</small>
+                            <button onclick="event.stopPropagation(); app.addToCart(${p.id})">Thêm</button>
+                        </div>`;
+                }).join('');
+                rec.innerHTML += '</div>';
+                rec.style.display = 'flex'; // Thay đổi từ 'block' thành 'flex' để áp dụng bố cục mobile
+
+                if (currentUser && force) {
+                    const now = new Date();
+                    users[currentUser].bmi.push({bmi, weight: +els.weightInput.value, height: +els.heightInput.value, date: now.toISOString()});
+                    save('gf_users', users);
+                    showBMIHistory();
+                }
+            };
+
+            const showBMIHistory = () => {
+                const historyDiv = document.getElementById('bmiHistory');
+                const listDiv = document.getElementById('bmiHistoryList');
+                if (currentUser && users[currentUser] && users[currentUser].bmi.length > 0) {
+                    historyDiv.style.display = 'block';
+                    listDiv.innerHTML = users[currentUser].bmi
+                        .slice(-5).reverse() 
+                        .map(item => {
+                            const date = new Date(item.date).toLocaleDateString('vi-VN');
+                            return `<div class="bmi-item">
+                                BMI: <strong>${item.bmi}</strong> (${item.height}cm, ${item.weight}kg) - ${date}
+                            </div>`;
+                        })
+                        .join('');
+                } else {
+                    historyDiv.style.display = 'none';
+                }
+            };
+
+            // 7. Modal & UX
+            const closeModal = (type) => {
+                document.getElementById(type + 'Modal').style.display = 'none';
+            };
+
+            const showProduct = (id) => {
+                const p = productsData.find(p => p.id === id);
+                if (!p) return;
+                const modal = document.getElementById('productModal');
+                const content = document.getElementById('productModalContent');
+                const ratingStars = '⭐'.repeat(Math.round(p.rating));
+                const isOutOfStock = p.stock <= 0;
+
+                content.innerHTML = `
+                    <span class="close-modal" onclick="app.closeModal('product')">&times;</span>
+                    <div style="text-align:center;padding:10px;">
+                        <img src="${p.img}" alt="${p.name}" style="width:100%; max-width:150px; height:auto; border-radius:10px; margin-bottom:15px;">
+                        <h2>${p.name}</h2>
+                        <div class="rating" style="font-size:1.1rem;margin:8px 0;">${ratingStars} (${p.rating} / 5)</div>
+                        <div class="price" style="font-size:1.6rem;color:var(--hot);margin-bottom:10px;">${p.price.toLocaleString('vi-VN')} VNĐ</div>
+                        <p style="color:var(--gray);margin-bottom:15px;">Tồn kho: ${p.stock}</p>
+                        <p style="font-size:0.9rem">Mô tả chi tiết sản phẩm ${p.name}. Đây là sản phẩm hữu cơ, chất lượng cao, phù hợp với mọi chế độ ăn kiêng. Đặt hàng ngay để nhận ưu đãi!</p>
+                        <button class="btn-primary" style="margin-top:20px; width:100%;" onclick="app.addToCart(${p.id}); app.closeModal('product');" ${isOutOfStock ? 'disabled' : ''}>
+                            ${isOutOfStock ? 'Hết hàng' : '<i class="fas fa-cart-plus"></i> Thêm vào giỏ hàng'}
+                        </button>
+                    </div>
+                `;
+                modal.style.display = 'flex';
+            };
+
+            const scrollToProduct = () => {
+                document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
+            };
+
+            const scrollIndicator = () => {
+                const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+                const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                const scrolled = (winScroll / height) * 100;
+                document.getElementById('scrollIndicator').style.width = scrolled + "%";
+            };
+
+            const toggleMobileMenu = () => {
+                document.getElementById('mobileMenu').classList.toggle('active');
+            };
+            
+            const toggleTheme = () => {
+                const html = document.documentElement;
+                const currentTheme = html.dataset.theme;
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                
+                html.dataset.theme = newTheme;
+                localStorage.setItem('gf_theme', newTheme);
+
+                els.themeToggleBtn.querySelector('i').className = newTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+            };
+
+            // 8. Authentication Functions
+            const handleAuthClick = () => {
+                if (currentUser) {
+                    if (confirm('Bạn có muốn đăng xuất khỏi tài khoản không?')) {
+                        logout();
+                    }
+                } else {
+                    showLogin();
+                }
+            };
+
+            const logout = () => {
+                currentUser = null;
+                localStorage.removeItem('gf_user');
+                updateAuthUI();
+                document.getElementById('bmiHistory').style.display = 'none';
+                alert('Đã đăng xuất thành công.');
+            };
+
+            const showLogin = () => {
+                const modal = document.getElementById('authModal');
+                const content = document.getElementById('authModalContent');
+                content.innerHTML = `
+                    <span class="close-modal" onclick="app.closeModal('auth')">&times;</span>
+                    <h2>Đăng nhập</h2>
+                    <div style="padding:20px;">
+                        <input type="email" id="loginEmail" placeholder="Email" style="width:100%;padding:10px;margin-bottom:10px;border-radius:5px;border:1px solid #ddd; background:var(--bg); color:var(--text);">
+                        <input type="password" id="loginPass" placeholder="Mật khẩu" style="width:100%;padding:10px;margin-bottom:20px;border-radius:5px;border:1px solid #ddd; background:var(--bg); color:var(--text);">
+                        <button class="btn-primary" style="width:100%;" onclick="app.login()">Đăng nhập</button>
+                        <p style="text-align:center;margin-top:15px;">Chưa có tài khoản? <a href="#" onclick="event.preventDefault(); app.showRegister()" style="color:var(--primary);font-weight:600;">Đăng ký ngay</a></p>
+                    </div>
+                `;
+                modal.style.display = 'flex';
+            };
+
+            const showRegister = () => {
+                const modal = document.getElementById('authModal');
+                const content = document.getElementById('authModalContent');
+                content.innerHTML = `
+                    <span class="close-modal" onclick="app.closeModal('auth')">&times;</span>
+                    <h2>Đăng ký</h2>
+                    <div style="padding:20px;">
+                        <input type="text" id="regName" placeholder="Họ và Tên" style="width:100%;padding:10px;margin-bottom:10px;border-radius:5px;border:1px solid #ddd; background:var(--bg); color:var(--text);">
+                        <input type="email" id="regEmail" placeholder="Email" style="width:100%;padding:10px;margin-bottom:10px;border-radius:5px;border:1px solid #ddd; background:var(--bg); color:var(--text);">
+                        <input type="password" id="regPass" placeholder="Mật khẩu" style="width:100%;padding:10px;margin-bottom:20px;border-radius:5px;border:1px solid #ddd; background:var(--bg); color:var(--text);">
+                        <button class="btn-primary" style="width:100%;" onclick="app.register()">Đăng ký</button>
+                        <p style="text-align:center;margin-top:15px;">Đã có tài khoản? <a href="#" onclick="event.preventDefault(); app.showLogin()" style="color:var(--primary);font-weight:600;">Đăng nhập</a></p>
+                    </div>
+                `;
+                modal.style.display = 'flex';
+            };
+
+            const login = () => {
+                const email = document.getElementById('loginEmail').value.trim();
+                const pass = document.getElementById('loginPass').value;
+                if (users[email] && users[email].pass === pass) {
+                    currentUser = email;
+                    localStorage.setItem('gf_user', email);
+                    alert(`Chào mừng, ${users[email].name.split(' ')[0]}!`);
+                    closeModal('auth');
+                    showBMIHistory();
+                    updateAuthUI(); 
+                } else alert('Sai email hoặc mật khẩu!');
+            };
+
+            const register = () => {
+                const name = document.getElementById('regName').value.trim();
+                const email = document.getElementById('regEmail').value.trim();
+                const pass = document.getElementById('regPass').value;
+                if (!name || !email || !pass) return alert('Vui lòng điền đầy đủ!');
+                if (users[email]) return alert('Email đã tồn tại!');
+                users[email] = { name, pass, bmi: [], orders: [] };
+                save('gf_users', users);
+                alert('Đăng ký thành công! Vui lòng đăng nhập.');
+                showLogin();
+            };
+            
+            // 9. Chatbot Functions
+            const toggleChat = () => {
+                const chatWindow = document.getElementById('chat-window');
+                chatWindow.style.display = chatWindow.style.display === 'flex' ? 'none' : 'flex';
+            };
+            
+            const showTypingIndicator = () => {
+                const d = document.createElement('div');
+                d.className = `message bot-message`;
+                d.id = 'typingIndicator';
+                d.innerHTML = '<strong>AI:</strong> <div class="typing-indicator"><span></span><span></span><span></span></div>';
+                els.chatBody.appendChild(d);
+                els.chatBody.scrollTop = els.chatBody.scrollHeight;
+            };
+
+            const addMsg = (type, text) => {
+                const d = document.createElement('div');
+                d.className = `message ${type}-message`;
+                if (type === 'bot') {
+                    d.innerHTML = `<strong>AI:</strong> ${text}`;
+                } else {
+                    d.innerHTML = text;
+                }
+                els.chatBody.appendChild(d);
+                els.chatBody.scrollTop = els.chatBody.scrollHeight;
+                return d;
+            };
+
+            const sendMessage = () => {
+                const msg = els.chatInput.value.trim();
+                if (!msg) return;
+                addMsg('user', msg);
+                els.chatInput.value = '';
+                
+                showTypingIndicator(); 
+
+                setTimeout(() => {
+                    const typingEl = document.getElementById('typingIndicator');
+                    if (typingEl) typingEl.remove();
+                    addMsg('bot', processBotResponse(msg));
+                }, 900);
+            };
+
+            const processBotResponse = (msg) => {
+                const lowerMsg = msg.toLowerCase();
+                if (lowerMsg.includes('bmi')) {
+                    return 'Để tính BMI, bạn hãy truy cập mục "Tính BMI" ở đầu trang và nhập chiều cao, cân nặng. Chỉ số BMI sẽ được tính tự động!';
+                }
+                if (lowerMsg.includes('sản phẩm') || lowerMsg.includes('mua hàng')) {
+                    return 'GreenFit có các sản phẩm hữu cơ như Protein, Hạt Chia, và các dụng cụ tập luyện. Bạn có thể xem chi tiết trong mục "Sản phẩm"!';
+                }
+                if (lowerMsg.includes('detox')) {
+                    return 'Nước Detox Cải Bó Xôi của chúng tôi rất được ưa chuộng. Bạn có muốn thêm vào giỏ hàng ngay không? (Mã SP: 1)';
+                }
+                if (lowerMsg.includes('giá')) {
+                    return 'Giá sản phẩm dao động từ 45k đến 750k VNĐ. Bạn có thể dùng bộ lọc giá trong mục "Sản phẩm" để tìm kiếm dễ dàng hơn.';
+                }
+                if (lowerMsg.includes('tên')) {
+                    return `Tôi là GreenFit AI, trợ lý ảo về sức khỏe và lối sống xanh của bạn.`;
+                }
+                if (lowerMsg.includes('chào') || lowerMsg.includes('hello')) {
+                    return 'Xin chào! Tôi có thể giúp bạn tìm sản phẩm hay tư vấn dinh dưỡng không?';
+                }
+                return 'Tôi chưa hiểu câu hỏi của bạn lắm. Hãy hỏi về BMI, sản phẩm, hoặc dinh dưỡng nhé!';
+            };
+
+            // 10. PWA Registration
+            const registerSW = () => {
+                if ('serviceWorker' in navigator) {
+                    const swCode = `
+                        self.addEventListener('install', (event) => {
+                            console.log('Service Worker installed');
+                            event.waitUntil(
+                                caches.open('gf-cache-v1').then((cache) => {
+                                    return cache.addAll([
+                                        './',
+                                        'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css',
+                                        'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap',
+                                    ]);
+                                })
+                            );
+                        });
+
+                        self.addEventListener('fetch', (event) => {
+                            event.respondWith(
+                                caches.match(event.request).then((response) => {
+                                    return response || fetch(event.request);
+                                })
+                            );
+                        });
+                    `;
+                    const blob = new Blob([swCode], {type: 'application/javascript'});
+                    const url = URL.createObjectURL(blob);
+                    navigator.serviceWorker.register(url);
+                }
+            };
+
+            // 11. Initialization
+            document.addEventListener('DOMContentLoaded', () => {
+                // Khởi tạo Theme
+                const theme = localStorage.getItem('gf_theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                document.documentElement.dataset.theme = theme;
+                els.themeToggleBtn.querySelector('i').className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+                
+                updateCartUI();
+                renderProducts(productsData);
+                registerSW();
+                showBMIHistory();
+                updateAuthUI(); 
+
+                // Gán listeners
+                els.heightInput.addEventListener('input', autoCalcBMI);
+                els.weightInput.addEventListener('input', autoCalcBMI);
+                els.searchInput.addEventListener('input', delayedFilter);
+                els.priceFilter.addEventListener('change', applyFilters);
+                els.ratingFilter.addEventListener('change', applyFilters);
+            });
+
+            // 12. Public API
+            return {
+                addToCart, updateQty, removeFromCart, toggleCart, checkout, showProduct, closeModal,
+                filterByCategory, applyFilters, delayedFilter, clearFilters,
+                calculateBMI, showBMIHistory, scrollToProduct,
+                toggleChat, sendMessage, toggleTheme, toggleMobileMenu, scrollIndicator,
+                showLogin, showRegister, login, register, handleAuthClick, logout 
+            };
+        })();
+
+        window.app = app;
+    </script>
 </body>
+</html>

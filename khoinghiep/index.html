@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+background: #ffffff;
+border-top: 1px solid #ddd;
+padding: 10px 0;
+z-index: 100;
+}
+
+
+.mobile-nav i {
+font-size: 24px;
+color: #333;
+}
+
+
+/* Nút chuyển đổi */
+.toggle-container {
+position: fixed;
+top: 10px;
+right: 10px;
+background: #fff;
+padding: 10px 15px;
+border-radius: 10px;
+box-shadow: 0 0 10px rgba(0,0,0,0.15);
+z-index: 200;
+display: flex;
+gap: 10px;
+align-items: center;
+}
+
+
+.toggle-container button {
+padding: 6px 12px;
+border: none;
+border-radius: 6px;
+font-size: 14px;
+cursor: pointer;
+background: #4CAF50;
+color: #fff;
+}
+
+
+/* Chế độ PC: ẩn mobile nav */
+.pc-mode .mobile-nav {
+display: none;
+}
+
+
+/* Responsive */
+@media (max-width: 600px) {
+.mobile-nav i {
+font-size: 20px;
+}
+}
+</style>
+</head>
+<body>
+
+
+<div class="toggle-container">
+<button id="mobileBtn">Mobile</button>
+<button id="pcBtn">PC</button>
+</div>
+
+
+<section class="iframe-container">
+<iframe src="https://ngqhuy220705.github.io/khoinghiep/app1.html" id="mainFrame"></iframe>
+</section>
+
+
+<div class="mobile-nav">
+<i class="fa fa-home"></i>
+<i class="fa fa-chart-line"></i>
+<i class="fa fa-user"></i>
+</div>
+
+
+<script>
+const mobileBtn = document.getElementById('mobileBtn');
+const pcBtn = document.getElementById('pcBtn');
+const body = document.body;
+
+
+mobileBtn.onclick = () => {
+body.classList.remove('pc-mode');
+};
+
+
+pcBtn.onclick = () => {
+body.classList.add('pc-mode');
+};
+</script>
+
+
+</body>
+</html>
